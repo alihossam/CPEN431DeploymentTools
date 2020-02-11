@@ -57,7 +57,7 @@ def useSCP(args):
 
 
 
-def main():
+if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Upload files to multiple nodes.')
 	parser.add_argument('servers', type=str, help='path of the servers list file')
 	parser.add_argument('key', type=str, help='path of your planet lab ssh key, make sure your key is not password encrypted')
@@ -67,7 +67,3 @@ def main():
 
 	args = parser.parse_args()
 	useSCP(args)
-
-
-main()
-
