@@ -1,0 +1,14 @@
+cs-planetlab4.cs.surrey.sfu.ca
+pl1.csl.utoronto.ca
+pl2.csl.utoronto.ca
+planetlab-05.cs.princeton.edu
+planetlab-2.calpoly-netlab.net
+planetlab01.cs.washington.edu
+planetlab02.cs.washington.edu
+planetlab1.cs.pitt.edu
+planetlab1.cs.ubc.ca
+planetlab2.cis.upenn.edu
+planetlab2.cs.columbia.edu
+planetlab2.cs.ubc.ca
+plink.cs.uwaterloo.ca
+plonk.cs.uwaterloo.ca
