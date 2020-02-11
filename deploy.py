@@ -2,23 +2,16 @@ import sys
 import argparse
 from pssh.clients import ParallelSSHClient
 from pssh.utils import load_private_key
-from gevent import joinall
 import subprocess
 
-default_proc_name = '431server'
-default_jar_path = '~/server/server.jar'
-default_port = '1337'
+DEFAULT_PROC_NAME = '431server'
+DEFAULT_JAR_PATH = '~/server/server.jar'
+DEFAULT_PORT = '1337'
 
 def collect_hostnames(filename):
 	print('# Collecting hostnames from servers list')
-	f = open(filename, 'r')
-	hosts = f.readlines()
-	strippedHosts = []
-	for host in hosts:
-		strippedHosts.append(host.strip())
-	f.close()
-	print('# Done collecting!')
-	return strippedHosts
+	with open(filename, 'r') as f:
+		return [host.strip() for host in f.readlines()]
 
 
 def run_cmds(args):
@@ -29,22 +22,23 @@ def run_cmds(args):
 	else:
 		stop_all(client)
 
+
 def stop_all(client):
 	# TODO add checks to see if command failed by parsing output
-	output = client.run_command(f'pkill -f {default_proc_name}')
+	output = client.run_command(f'pkill -f {DEFAULT_PROC_NAME}')
+	print(output)
+
 
 def start(client):
 	# TODO add checks to see if command failed by parsing output
-	output = client.run_command(f'exec -a {default_proc_name} java -Xmx64m -jar {default_jar_path} {default_port} &')
+	output = client.run_command(f'exec -a {DEFAULT_PROC_NAME} java -Xmx64m -jar {DEFAULT_JAR_PATH} {DEFAULT_PORT} &')
+	print(output)
 
 
-def main():
+if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Start/Stop server in multiple nodes.')
 	parser.add_argument('servers', type=str, help='path of the servers list file')
 	parser.add_argument('key', type=str, help='path of your planet lab ssh key, make sure your key is not password encrypted')
 	parser.add_argument('startstop', help='start or stop server. Pass in -start or -stop', choices=["start", "stop"])
 	args = parser.parse_args()
 	run_cmds(args)
-
-main()
-
