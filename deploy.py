@@ -3,19 +3,15 @@ import argparse
 from pssh.clients import ParallelSSHClient
 from pssh.utils import load_private_key
 import subprocess
+import utils
 
 DEFAULT_PROC_NAME = '431server'
 DEFAULT_JAR_PATH = '~/server/server.jar'
 DEFAULT_PORT = '1337'
 
-def collect_hostnames(filename):
-	print('# Collecting hostnames from servers list')
-	with open(filename, 'r') as f:
-		return [host.strip() for host in f.readlines()]
-
 
 def run_cmds(args):
-	hosts = collect_hostnames(args.servers)
+	hosts = utils.collect_hostnames(args.servers)
 	client = ParallelSSHClient(hosts, user='ubc_cpen431_5', pkey=args.key, allow_agent=False)
 	if args.startstop == "start":
 		start(client)

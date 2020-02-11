@@ -6,29 +6,17 @@ from pssh.clients import ParallelSSHClient
 from pssh.utils import load_private_key
 from gevent import joinall
 from pssh.utils import enable_host_logger
-
-def collectHostnames(filename):
-	print('# Collecting hostnames from servers list')
-	f = open(filename, 'r')
-	hosts = f.readlines()
-	strippedHosts = []
-	for host in hosts:
-		strippedHosts.append(host.strip())
-	f.close()
-	print('# Done collecting!')
-	return strippedHosts
+import utils
 
 
 # make a subprocess per host to upload -> spawns multiple scp processes
 # - kept here just in case but not used in this program
-def scpLoop(args):
-	print("# Uploading files")
-	hosts = collectHostnames(args.servers)
+def upload_file_no_pssh(hosts, key, file, destination):
 	procs = []
 	for host in hosts:
 		entry = {}
 		entry['host'] = host
-		cmd = getCommand(host, args)
+		cmd = f'scp -v -i {key} {file} ubc_cpen431_5@{host}:{destination}'
 		entry['proc'] = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 		procs.append(entry)
 
@@ -39,22 +27,29 @@ def scpLoop(args):
 		if ret != 0:
 			host = entry['host']
 			print(f'Uploading to host: {host} failed, scp returned code: {ret}')
-	print("# Done")
 
-def getCommand(host, args):
-	return f'scp -v -i {args.key} {args.file} ubc_cpen431_5@{host}:{args.destination}'
+
+def getCommand(host, key, file, destination):
+	return f'scp -v -i {key} {file} ubc_cpen431_5@{host}:{destination}'
 
 
 def useSCP(args):
 	enable_host_logger()
-	hosts = collectHostnames(args.servers)
+	hosts = utils.collect_hostnames(args.servers)
 	client = ParallelSSHClient(hosts, user='ubc_cpen431_5', pkey=args.key, allow_agent=False)
-	cmds = client.scp_send(args.file, args.destination)
+	upload_file(client, args.file, args.destination)
+
+
+def upload_file(client, local_path, destination_path):
+	print(f'uploading {local_path} to {destination_path}')
+	cmds = client.scp_send(local_path, destination_path)
+	print('after send')
 	joinall(cmds, raise_error=True)
+	print('after joinall')
 	for index, job in enumerate(cmds):
 		if not job.successful():
-			print(f'Failure detected: most probably host {hosts[index]}')
-
+			print(f'Failure detected: job index={index}')
+			print(job)
 
 
 if __name__ == '__main__':
