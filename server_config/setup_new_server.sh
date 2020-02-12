@@ -1,12 +1,12 @@
 # Install Java if not installed
 which java
-if [[$? != 0]]; then
+if [[ $? != 0 ]]; then
     rpm -ivhy ~/server_config/jre.rpm
 fi
 
 # Install Prometheus node_exporter
 rm -rf node_exporter
-if [[$(uname --m) == 'i686']]; then
+if [[ $(uname --m) == 'i686' ]]; then
     tar -xzf ~/server_config/node_exporter-0.18.1.linux-386.tar.gz
     mv node_exporter-0.18.1.linux-386 node_exporter
 else
