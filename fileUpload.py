@@ -30,7 +30,6 @@ def upload_file_no_pssh(hosts, key, file, destination, user='ubc_cpen431_5', ver
 	
 	verbose_flag = '-v' if verbose else ''
 	commands = [f'scp {verbose_flag} -i {key} {file} {user}@{host}:{destination}' for host in hosts]
-	print(commands)
 	return utils.parallelize_commands(commands)
 
 

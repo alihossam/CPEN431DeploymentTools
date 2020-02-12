@@ -25,15 +25,10 @@ if __name__ == '__main__':
     hostnames = utils.collect_hostnames(ALL_SERVERS_PATH)
     successes, fails = utils.run_command(hostnames, 'netstat -nlp', 'ubc_cpen431_5', args.key)
 
-    for host, stderr in fails.items():
-        print(f'FAIL {host}: {stderr.strip()}')
-
     node_exporter_urls = []
     jmx_exporter_urls = []
     for host, stdout in successes.items():
-        print('SUCCESS:', host)
         for line in stdout.split('\n'):
-            print(line)
             split = line.split()
             if not split or split[0] != 'tcp':
                 continue
@@ -41,7 +36,6 @@ if __name__ == '__main__':
             port = addr.split(':')[-1]
             pid, progname = pid_progname.split('/')
             if progname == 'node_exporter':
-                print(f'{host} is running node_exporter on {port}')
                 node_exporter_urls.append(f'{host}:{port}')
             elif progname == deploy.DEFAULT_PROC_NAME:
                 jmx_exporter_urls.append(f'{host}:{port}')
@@ -66,17 +60,14 @@ scrape_configs:
 """
 
     temp_file_path = utils.get_project_path('temporary_config.yaml')
-    print(temp_file_path)
     with open(temp_file_path, 'w') as f:
         f.write(yaml_config)
     
-    print(yaml_config)
     output = utils.run_command(
         [PROMETHEUS_HOSTNAME],
         f'rm -f {PROMETHEUS_YAML_PATH}',
         PROMETHEUS_USER,
         args.prometheus_key.strip())
-    print(output)
     successes, fails = fileUpload.upload_file_no_pssh(
         [PROMETHEUS_HOSTNAME],
         args.prometheus_key.strip(),
@@ -84,7 +75,6 @@ scrape_configs:
         PROMETHEUS_YAML_PATH,
         user=PROMETHEUS_USER,
         verbose=False)
-    print(fails[0] if fails else None)
     os.remove(temp_file_path)
 
 
@@ -93,7 +83,6 @@ scrape_configs:
         f'cd {PROMETHEUS_DIR} && killall ./prometheus',
         PROMETHEUS_USER,
         args.prometheus_key.strip())
-    print('kill output', output)
 
     print('Starting Prometheus server')
     # The command to start the server hangs if successful, if the timer goes off, that means the server was started (since the command is hanging)
