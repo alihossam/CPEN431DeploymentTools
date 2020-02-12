@@ -19,7 +19,27 @@ def print_pssh_output(output):
             print(f'[{node}] {line}')
 
 
-def run_commands(hosts, commands, user, key, timeout=3):
+def parallelize_commands(commands):
+    procs = [
+        subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        for cmd in commands
+    ]
+
+    successes, fails = {}, {}
+
+    for i, proc in enumerate(procs):
+        proc.wait()
+        ret = proc.poll()
+        stdout, stderr = proc.communicate()
+        if ret != 0:
+            fails[i] = stderr.decode('utf-8')
+        else:
+            successes[i] = stdout.decode('utf-8')
+
+    return successes, fails
+
+
+def run_commands(hosts, commands, user, key, timeout=10):
     ssh_commands = [f"""ssh -l {user} -i {key} -o ConnectTimeout={timeout} {host} '{cmd}'""" for host, cmd in zip(hosts, commands)]
     procs = {
         host: subprocess.Popen(ssh_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -40,5 +60,5 @@ def run_commands(hosts, commands, user, key, timeout=3):
     return successes, fails
 
 
-def run_command(hosts, command, user, key, timeout=3):
+def run_command(hosts, command, user, key, timeout=10):
     return run_commands(hosts, [command]*len(hosts), user, key, timeout=timeout)
