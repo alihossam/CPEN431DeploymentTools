@@ -15,8 +15,11 @@ def get_project_path(filename):
 
 def print_pssh_output(output):
     for node, result in output.items():
+        print('item result', result)
         for line in result.stdout:
             print(f'[{node}] {line}')
+        for line in result.stderr:
+            print(f'ERROR: [{node}] {line}')
 
 
 def parallelize_commands(commands):

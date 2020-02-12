@@ -32,3 +32,14 @@ To sync nodes with Prometheus so that all nodes upload their metrics run:
 ```
 python3 syncPrometheus.py
 ```
+This should be done after adding/removing a node or starting a new Java service.
+
+
+## Deployment Workflow
+To deploy to a set of nodes we should stop existing services, upload a JAR, start services and resync Prometheus so it can grab on to the newly started JMX processes.
+
+```
+python3 deploy.py stop --servers servers.txt
+python3 deploy.py start --servers servers.txt --jar path/to/local/jar.jar
+python3 syncPrometheus.py
+```

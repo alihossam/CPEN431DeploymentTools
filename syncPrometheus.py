@@ -27,7 +27,9 @@ if __name__ == '__main__':
     node_exporter_urls = []
     jmx_exporter_urls = []
     for host, stdout in successes.items():
+        print(host)
         for line in stdout.split('\n'):
+            print(line)
             split = line.split()
             if not split or split[0] != 'tcp':
                 continue

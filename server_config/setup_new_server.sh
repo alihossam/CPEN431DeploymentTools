@@ -1,7 +1,7 @@
 # Install Java if not installed
 which java
 if [[ $? != 0 ]]; then
-    rpm -ivhy ~/server_config/jre.rpm
+    sudo rpm -ivh ~/server_config/jre-8u31-linux-i586.rpm
 fi
 
 # Install Prometheus node_exporter
