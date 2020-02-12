@@ -12,22 +12,6 @@ import utils
 # make a subprocess per host to upload -> spawns multiple scp processes
 # - kept here just in case but not used in this program
 def upload_file_no_pssh(hosts, key, file, destination, user='ubc_cpen431_5', verbose=True):
-	# procs = []
-	# for host in hosts:
-	# 	entry = {}
-	# 	entry['host'] = host
-	# 	cmd = f'scp -v -i {key} {file} {user}@{host}:{destination}'
-	# 	entry['proc'] = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-	# 	procs.append(entry)
-
-	# for entry in procs:
-	# 	proc = entry['proc']
-	# 	proc.wait()
-	# 	ret = proc.poll()
-	# 	if ret != 0:
-	# 		host = entry['host']
-	# 		print(f'Uploading to host: {host} failed, scp returned code: {ret}')
-	
 	verbose_flag = '-v' if verbose else ''
 	commands = [f'scp {verbose_flag} -i {key} {file} {user}@{host}:{destination}' for host in hosts]
 	return utils.parallelize_commands(commands)
