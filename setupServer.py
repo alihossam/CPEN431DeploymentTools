@@ -8,6 +8,7 @@ from pssh.utils import enable_host_logger
 
 import utils
 import fileUpload
+import local_config
 
 DEFAULT_PROC_NAME = '431server'
 DEFAULT_JAR_PATH = '~/server/server.jar'
@@ -15,9 +16,8 @@ DEFAULT_PORT = '1337'
 
 SERVER_CONFIG_DIR = utils.get_project_path('server_config')
 
-def run_cmds(args):
-    server = args.server.strip()
-    client = ParallelSSHClient([server], user='ubc_cpen431_5', pkey=args.key, allow_agent=False)
+def setup_server(server, key):
+    client = ParallelSSHClient([server], user='ubc_cpen431_5', pkey=key, allow_agent=False)
     output = client.run_command('rm -rf ~/server_config')
     utils.print_pssh_output(output)
     output = client.run_command('mkdir ~/server_config')
@@ -25,7 +25,7 @@ def run_cmds(args):
     for f in os.listdir(SERVER_CONFIG_DIR):
         dest_path = f"~/server_config/{f.split('/')[-1]}"
         local_path = os.path.join(SERVER_CONFIG_DIR, f)
-        fileUpload.upload_file_no_pssh([server], args.key, local_path, dest_path)
+        fileUpload.upload_file_no_pssh([server], key, local_path, dest_path)
         print(f'Wrote file {local_path} to {server}')
     output = client.run_command('bash ~/server_config/setup_new_server.sh')
     utils.print_pssh_output(output)
@@ -43,7 +43,9 @@ def run_cmds(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Start/Stop server in multiple nodes.')
     parser.add_argument('server', type=str, help='server hostname')
-    parser.add_argument('key', type=str, help='path of your planet lab ssh key, make sure your key is not password encrypted')
     args = parser.parse_args()
     enable_host_logger()
-    run_cmds(args)
+
+    server = args.server.strip()
+    key = local_config.get_planetlab_key()
+    setup_server(server, key)
