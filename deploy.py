@@ -7,10 +7,12 @@ import subprocess
 import utils
 import local_config
 import fileUpload
+import setupServer
 
 DEFAULT_PROC_NAME = '431server'
 DEFAULT_JAR_PATH = '~/server.jar'
 DEFAULT_PORT = '1337'
+DEFAULT_JAVAAGENT_PORT = '8200'
 
 
 def stop_cmd():
@@ -45,7 +47,12 @@ def stop_all(client):
 
 def start(client):
 	# TODO add checks to see if command failed by parsing output
-	client.run_command(f'exec -a {DEFAULT_PROC_NAME} java -Xmx64m -jar {DEFAULT_JAR_PATH} {DEFAULT_PORT} &')
+	javaagent_jar_path = setupServer.get_server_config_path('jmx_prometheus_javaagent-0.12.0.jar')
+	javaagent_conf_path = setupServer.get_server_config_path('javaagent_config.yml')
+	cmd = f'exec -a {DEFAULT_PROC_NAME} java -javaagent:{javaagent_jar_path}={DEFAULT_JAVAAGENT_PORT}:{javaagent_conf_path} -Xmx64m -XX:+UseSerialGC -jar {DEFAULT_JAR_PATH} {DEFAULT_PORT} &'
+	print('starting server with cmd:', cmd)
+	output = client.run_command(cmd)
+	utils.print_pssh_output(output)
 
 
 if __name__ == '__main__':
