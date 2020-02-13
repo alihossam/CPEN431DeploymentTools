@@ -12,10 +12,11 @@ if __name__ == '__main__':
     key = local_config.get_planetlab_key()
 
     all_nodes = utils.collect_hostnames(utils.get_project_path('all_servers.txt'))
-    successes, failures = utils.run_command(all_nodes, 'echo test', 'ubc_cpen431_5', key, timeout=3)
+    successes, failures = utils.run_command(all_nodes, 'echo test', 'ubc_cpen431_5', key, timeout=5)
     if args.verbose:
+        fmt_len = max((len(h) for h in failures.keys()))
         for host, stderr in failures.items():
-            print(f'ERROR [{host}] {stderr}')
+            print(f'ERROR [{host+" "*(fmt_len-len(host))}] {stderr}'.strip())
         print('\nLIVE NODES:')
 
     for host in successes.keys():
