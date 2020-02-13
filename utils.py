@@ -51,9 +51,9 @@ def run_commands(hosts, commands, user, key, timeout=10):
     successes, fails = {}, {}
 
     for host, proc in procs.items():
-        proc.wait()
+        proc.wait(timeout=timeout)
         ret = proc.poll()
-        stdout, stderr = proc.communicate()
+        stdout, stderr = proc.communicate(timeout=timeout)
         if ret != 0:
             fails[host] = stderr.decode('utf-8')
         else:
