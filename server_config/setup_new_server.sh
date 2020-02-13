@@ -17,7 +17,7 @@ fi
 
 cd node_exporter
 # TODO set port number dynamically
-./node_exporter --web.listen-address=":8100" > ~/node_exporter.log 2>&1 &
+./node_exporter --web.listen-address=":48100" > ~/node_exporter.log 2>&1 &
 
 cd ..
 cp ~/server_config/node_exporter_config.yaml ./config.yaml

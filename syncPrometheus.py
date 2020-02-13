@@ -35,8 +35,8 @@ if __name__ == '__main__':
                 continue
             addr, pid_progname = split[3], split[-1]
             port = addr.split(':')[-1]
-            pid, progname = pid_progname.split('/')
-            if progname == 'node_exporter':
+            pid, progname = pid_progname.split('/', 1)
+            if 'node_export' in progname:
                 node_exporter_urls.append(f'{host}:{port}')
             elif progname == deploy.DEFAULT_PROC_NAME:
                 jmx_exporter_urls.append(f'{host}:{port}')

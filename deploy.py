@@ -11,8 +11,8 @@ import setupServer
 
 DEFAULT_PROC_NAME = '431server'
 DEFAULT_JAR_PATH = '~/server.jar'
-DEFAULT_PORT = '1337'
-DEFAULT_JAVAAGENT_PORT = '8200'
+DEFAULT_PORT = '41337'
+DEFAULT_JAVAAGENT_PORT = '48200'
 
 
 def stop_cmd():

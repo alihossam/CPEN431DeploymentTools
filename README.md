@@ -43,3 +43,10 @@ python3 deploy.py stop --servers servers.txt
 python3 deploy.py start --servers servers.txt --jar path/to/local/jar.jar
 python3 syncPrometheus.py
 ```
+
+## Useful snippets
+
+To setup all servers that are accessible via SSH
+```
+python3 getLiveNodes.py | xargs -I % python3 setupServer.py %
+```
