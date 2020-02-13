@@ -42,7 +42,7 @@ def parallelize_commands(commands):
 
 
 def run_commands(hosts, commands, user, key, timeout=10):
-    ssh_commands = [f"""ssh -l {user} -i {key} -o ConnectTimeout={timeout} {host} '{cmd}'""" for host, cmd in zip(hosts, commands)]
+    ssh_commands = [f"""ssh -l {user} -i {key} -o ConnectTimeout={timeout} -o 'StrictHostKeyChecking no' {host} '{cmd}'""" for host, cmd in zip(hosts, commands)]
     procs = {
         host: subprocess.Popen(ssh_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         for host, ssh_cmd in zip(hosts, ssh_commands)
@@ -51,9 +51,9 @@ def run_commands(hosts, commands, user, key, timeout=10):
     successes, fails = {}, {}
 
     for host, proc in procs.items():
-        proc.wait(timeout=timeout)
+        proc.wait()
         ret = proc.poll()
-        stdout, stderr = proc.communicate(timeout=timeout)
+        stdout, stderr = proc.communicate()
         if ret != 0:
             fails[host] = stderr.decode('utf-8')
         else:
