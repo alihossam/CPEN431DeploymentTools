@@ -11,11 +11,11 @@ import utils
 
 # make a subprocess per host to upload -> spawns multiple scp processes
 # - kept here just in case but not used in this program
-def upload_file_no_pssh(hosts, key, file, destination, user='ubc_cpen431_5', verbose=True):
+def upload_file_no_pssh(hosts, key, file, destination, user='ubc_cpen431_5', verbose=True, recurse=False):
 	verbose_flag = '-v' if verbose else ''
-	commands = [f'scp {verbose_flag} -i {key} {file} {user}@{host}:{destination}' for host in hosts]
+  recurse_flag = '-r' if recurse else ''
+	commands = [f'scp {verbose_flag} {recurse_flag} -i {key} {file} {user}@{host}:{destination}' for host in hosts]
 	return utils.parallelize_commands(commands)
-
 
 def getCommand(host, key, file, destination):
 	return f'scp -v -i {key} {file} ubc_cpen431_5@{host}:{destination}'
@@ -28,9 +28,9 @@ def useSCP(args):
 	upload_file(client, args.file, args.destination)
 
 
-def upload_file(client, local_path, destination_path):
+def upload_file(client, local_path, destination_path, recurse=False):
 	print(f'uploading {local_path} to {destination_path}')
-	cmds = client.scp_send(local_path, destination_path)
+	cmds = client.scp_send(local_path, destination_path, recurse)
 	print('after send')
 	joinall(cmds, raise_error=True)
 	print('after joinall')
